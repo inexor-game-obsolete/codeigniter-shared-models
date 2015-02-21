@@ -14,10 +14,10 @@ class Comments_model extends MY_Model
 	 * Gets a comment by id.
 	 * @param  int $id id of the comment
 	 * @return object     object of the comment
-	 */
+	 */ 
 	public function get_by_id($id)
 	{
-		$query = $this->db->get_where($this->_table, array('id' => $id));
+		$query = $this->db->get_where($this->Table, array('id' => $id));
 		return $query->row();
 	}
 
@@ -47,7 +47,7 @@ class Comments_model extends MY_Model
 		$this->db->order_by('date', $order);
 		$this->db->limit($limit, $offset);
 		$query = $this->db->get_where(
-			$this->_table,
+			$this->Table,
 			array(
 				"module"     => $module,
 				"identifier" => $identifier
@@ -69,7 +69,7 @@ class Comments_model extends MY_Model
 	{
 		$this->db->order_by('date', $order);
 		$this->db->limit($limit, $offset);
-		return $this->db->get_where(array("id" => $id), $this->_table)->result();
+		return $this->db->get_where(array("id" => $id), $this->Table)->result();
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Comments_model extends MY_Model
 	 */
 	public function comment($module, $identifier, $userid, $comment)
 	{
-		$this->db->insert($this->_table, array(
+		$this->db->insert($this->Table, array(
 			'module'     => $module,
 			'identifier' => $identifier,
 			'user_id'    => $userid,
@@ -101,7 +101,7 @@ class Comments_model extends MY_Model
 	 */
 	public function answer($id, $userid, $comment)
 	{
-		$this->db->insert($this->_table, array(
+		$this->db->insert($this->Table, array(
 			'answer_to' => $id,
 			'user_id'   => $userid,
 			'comment'   => $comment,
