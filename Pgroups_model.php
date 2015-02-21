@@ -1,15 +1,11 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Pgroups_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'pgroups';
-
+class Pgroups_model extends MY_Model {
 	/**
 	 * Magic Method __construct();
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->load->database();
+		$this->load_config('pgroups');
 	}
 
 	/**
@@ -18,7 +14,7 @@ class Pgroups_model extends CI_Model {
 	 * @return object group-object
 	 */
 	public function get_group($id) {
-		$query = $this->db->get_where($this->_table, array('id' => $id));
+		$query = $this->db->get_where($this->Table, array('id' => $id));
 		return $query->row();
 	}
 
@@ -28,7 +24,7 @@ class Pgroups_model extends CI_Model {
 	 * @return mixed BOOL(FALSE) if group does not exist else OBJECT(group)
 	 */
 	public function get_group_by_name($name) {
-		$query = $this->db->get_where($this->_table, array('LOWER(name)' => strtolower($name)));
+		$query = $this->db->get_where($this->Table, array('LOWER(name)' => strtolower($name)));
 		$r = $query->row();
 		if(isset($r->name)) return $r;
 		return false;
@@ -44,7 +40,7 @@ class Pgroups_model extends CI_Model {
 			'name' => $name,
 			'description' => $description
 		);
-		$this->db->insert($this->_table, $data);
+		$this->db->insert($this->Table, $data);
 	}
 
 	/**
@@ -63,7 +59,7 @@ class Pgroups_model extends CI_Model {
 		if(!isint($limit)) $limit = 30;
 		$this->db->limit($limit, $offset);
 		$this->db->order_by($order_by, $order);
-		return $this->db->get($this->_table)->result();
+		return $this->db->get($this->Table)->result();
 	}
 
 	/**
@@ -84,7 +80,7 @@ class Pgroups_model extends CI_Model {
 		$this->db->limit($limit, $offset);
 		$this->db->order_by($order_by, $order);
 		$this->db->like('name', $search);
-		return $this->db->get($this->_table)->result();
+		return $this->db->get($this->Table)->result();
 	}
 
 	/**
@@ -96,7 +92,7 @@ class Pgroups_model extends CI_Model {
 	public function search_max_pagination($search, $limit = 30) {
 		if(!isint($limit)) $limit = 30;
 		$this->db->like('name', $search);
-		return ceil($this->db->get($this->_table)->num_rows() / $limit);
+		return ceil($this->db->get($this->Table)->num_rows() / $limit);
 	}
 
 	/**
@@ -106,6 +102,6 @@ class Pgroups_model extends CI_Model {
 	 */
 	public function max_pagination($limit = 30) {
 		if(!isint($limit)) $limit = 30;
-		return ceil($this->db->get($this->_table)->num_rows() / $limit);
+		return ceil($this->db->get($this->Table)->num_rows() / $limit);
 	}
 }

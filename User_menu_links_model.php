@@ -1,15 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class User_menu_links_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'user_menu_links';
-
+class User_menu_links_model extends MY_Model {
 	/**
 	 * Magic Method __construct();
 	 */
 	function __construct() {
-		$this->load->database();
+		parent::__construct();
+		$this->load_config('user_menu_links');
 	}
 
 	/**
@@ -37,7 +34,7 @@ class User_menu_links_model extends CI_Model {
 		$where .= ')';
 		$this->db->where($where, NULL, FALSE);
 		$this->db->order_by('order', 'DESC');
-		$results = $this->db->get($this->_table)->result();
+		$results = $this->db->get($this->Table)->result();
 		$parents = array();
 		$return = array();
 		$i = 0;
@@ -71,7 +68,7 @@ class User_menu_links_model extends CI_Model {
 	 */
 	public function get($id) {
 		$this->db->where('id', $id);
-		return $this->db->get($this->_table)->row();
+		return $this->db->get($this->Table)->row();
 	}
 
 	/**

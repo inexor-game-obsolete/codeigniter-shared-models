@@ -1,15 +1,12 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Users_permissions_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'users_permissions';
-
+class Users_permissions_model extends MY_Model {
+	
 	/**
 	 * Magic Method __construct();
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->load->database();
+		$this->load_config('users_permissions');
 	}
 
 	/**
@@ -18,7 +15,7 @@ class Users_permissions_model extends CI_Model {
 	 * @return object containing permission-ids
 	 */
 	public function get_permissions_by_user($id) {
-		$query = $this->db->get_where($this->_table, array('user_id' => $id));
+		$query = $this->db->get_where($this->Table, array('user_id' => $id));
 		return $query->result_array();
 	}
 
@@ -28,7 +25,7 @@ class Users_permissions_model extends CI_Model {
 	 * @return object containing user-ids
 	 */
 	public function get_permission($id) {
-		$query = $this->db->get_where($this->_table, array('permissions_id' => $id));
+		$query = $this->db->get_where($this->Table, array('permissions_id' => $id));
 		return $query->result_array();
 	}
 
@@ -39,7 +36,7 @@ class Users_permissions_model extends CI_Model {
 	 * @return mixed INT(0) if not set in table else BOOL, TRUE if has permission
 	 */
 	public function has_user_permission($userid, $permissionid) {
-		$query = $this->db->get_where($this->_table, array('user_id' => $userid, 'permissions_id' => $permissionid));
+		$query = $this->db->get_where($this->Table, array('user_id' => $userid, 'permissions_id' => $permissionid));
 		if($query->num_rows() === 1)
 		{
 			$data = $query->row();
@@ -66,7 +63,7 @@ class Users_permissions_model extends CI_Model {
 		$current_permission = $this->has_user_permission($userid, $permissionid);
 		if($current_permission===0)
 		{
-			$this->db->insert($this->_table, array(
+			$this->db->insert($this->Table, array(
 				'user_id' => $userid,
 				'permission_id' => $permissionid,
 				'value' => $value
@@ -74,7 +71,7 @@ class Users_permissions_model extends CI_Model {
 		} elseif($current_permission != $value) {
 			$this->db->where('user_id', $userid);
 			$this->db->where('permission_id', $permissionid);
-			$this->db->update($this->_table, array('value' => $value));
+			$this->db->update($this->Table, array('value' => $value));
 		}
 	}
 
@@ -87,7 +84,7 @@ class Users_permissions_model extends CI_Model {
 	public function update($uid, $pid, $value) {
 		$this->db->where('user_id', $uid);
 		$this->db->where('permissions_id', $pid);
-		$this->db->update($this->_table, array('value' => $value));
+		$this->db->update($this->Table, array('value' => $value));
 	}
 
 	/**
@@ -97,7 +94,7 @@ class Users_permissions_model extends CI_Model {
 	 * @param bool $value Wheter the user has the permission or not
 	 */
 	public function insert($uid, $pid, $value) {
-		return $this->db->insert($this->_table, array(
+		return $this->db->insert($this->Table, array(
 			'user_id' => $uid,
 			'permissions_id' => $pid,
 			'value' => $value
@@ -114,7 +111,7 @@ class Users_permissions_model extends CI_Model {
 		$this->db->where('user_id', $uid);
 		$this->db->where('permissions_id', $pid);
 		$this->db->limit(1, 0);
-		if($this->db->get($this->_table)->num_rows() > 0) return true;
+		if($this->db->get($this->Table)->num_rows() > 0) return true;
 		return false;
 	}
 
@@ -126,7 +123,7 @@ class Users_permissions_model extends CI_Model {
 	public function delete($uid, $pid) {
 		$this->db->where('user_id', $uid);
 		$this->db->where('permissions_id', $pid);
-		$this->db->delete($this->_table);
+		$this->db->delete($this->Table);
 	}
 
 }

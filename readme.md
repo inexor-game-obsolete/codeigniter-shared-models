@@ -1,6 +1,6 @@
-# CodeIgniter shared models submodule
+# Codeigniter submodule
 
-This repository is getting used as a submodule in our project and community site.
+The respective branches within this repository are getting used as a submodule in our project and community page.
 
 # License
 

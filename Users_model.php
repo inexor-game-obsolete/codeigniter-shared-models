@@ -1,8 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-class Users_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'users';
+class Users_model extends MY_Model {
 
 	// Hash-algorithms used for the password-hashing (all available will be used)
 	private $_hash_algos = array('whirlpool', 'sha512');
@@ -15,7 +12,7 @@ class Users_model extends CI_Model {
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->load->database();
+		$this->load_config('users');
 		if(file_exists(FCPATH . 'application/config/data.php')) {
 			$this->config->load('data', true);
 			$dirs = $this->config->item('data')['dir'];
@@ -33,7 +30,7 @@ class Users_model extends CI_Model {
 	 */
 	public function user($id) {
 		$this->db->where('id', $id);
-		$query = $this->db->get($this->_table);
+		$query = $this->db->get($this->Table);
 		return $query->row();
 	}
 
@@ -46,7 +43,7 @@ class Users_model extends CI_Model {
 	public function update_user($id, $data, $password_is_hashed = FALSE) {
 		if(!$password_is_hashed && isset($data['password'])) $data['password'] = $this->real_hash_password($id, $data['password']);
 		$this->db->where('id', $id);
-		$this->db->update($this->_table, $data);
+		$this->db->update($this->Table, $data);
 	}
 
 	/**
@@ -81,7 +78,7 @@ class Users_model extends CI_Model {
 		foreach($columns as $column) {
 			$this->db->or_like($column, $name);
 		}
-		return $this->db->get($this->_table)->result();
+		return $this->db->get($this->Table)->result();
 
 	}
 
@@ -92,7 +89,7 @@ class Users_model extends CI_Model {
 	 */
 	public function user_by_username($username) {
 		$this->db->where('username', $username);
-		$query = $this->db->get($this->_table);
+		$query = $this->db->get($this->Table);
 		return $query->row();
 	}
 
@@ -103,7 +100,7 @@ class Users_model extends CI_Model {
 	 */
 	public function user_by_unique_id($unique_id) {
 		$this->db->where('unique_id', $unique_id);
-		$query = $this->db->get($this->_table);
+		$query = $this->db->get($this->Table);
 		return $query->row();
 	}
 
@@ -114,7 +111,7 @@ class Users_model extends CI_Model {
 	 */
 	public function user_by_email($email) {
 		$this->db->where('email', $email);
-		$query = $this->db->get($this->_table, $limit, $start);
+		$query = $this->db->get($this->Table, $limit, $start);
 		return $query->row();
 	}
 
@@ -127,7 +124,7 @@ class Users_model extends CI_Model {
 	 */
 	public function users_by_country_code($code, $limit = NULL, $start = NULL) {
 		$this->db->where('country_code', $code);
-		$query = $this->db->get($this->_table, $limit, $start);
+		$query = $this->db->get($this->Table, $limit, $start);
 		return $query->result();
 	}
 
@@ -145,7 +142,7 @@ class Users_model extends CI_Model {
 		if(!$this->db->field_exists($orderby)) $orderby = 'username';
 		if($order != 'DESC') $order = 'ASC';
 		$this->db->order_by($orderby, $order);
-		$query = $this->db->get($this->_table, $limit, $start);
+		$query = $this->db->get($this->Table, $limit, $start);
 		return $query->result();
 	}
 
@@ -156,7 +153,7 @@ class Users_model extends CI_Model {
 	 */
 	public function user_exists($username) {
 		$this->db->where('username', $username);
-		if($this->db->get($this->_table)->num_rows() > 0) return true;
+		if($this->db->get($this->Table)->num_rows() > 0) return true;
 		return false;
 	}
 
@@ -167,7 +164,7 @@ class Users_model extends CI_Model {
 	 */
 	public function ingame_name_exists($name) {
 		$this->db->where('ingame_name', $name);
-		if($this->db->get($this->_table)->num_rows() > 0) return true;
+		if($this->db->get($this->Table)->num_rows() > 0) return true;
 		return false;
 	}
 
@@ -201,9 +198,9 @@ class Users_model extends CI_Model {
 			'timestamp'		=> date('Y-m-d H:i:s')
 		);
 
-		$this->db->insert($this->_table, $first_data);
+		$this->db->insert($this->Table, $first_data);
 		$u = $this->user_by_username($username);
-		$fielddata = $this->db->field_data($this->_table);
+		$fielddata = $this->db->field_data($this->Table);
 		$id_maxlen = 11;
 		foreach($fielddata as $f) { if($f->name == 'id') { $id_maxlen = $f->max_length; break; }}
 		$unique_id = uniqid(str_pad($u->id, $fielddata[0]->max_length, '0'), true);
@@ -214,7 +211,7 @@ class Users_model extends CI_Model {
 			'active'	=> $active
 		);
 		$this->db->where('id', $u->id);
-		$this->db->update($this->_table, $second_data);
+		$this->db->update($this->Table, $second_data);
 		if(is_string($this->_data_dir)) mkdir(FCPATH . $this->_data_dir . $unique_id . '/');
 		return true;
 	}
@@ -230,7 +227,7 @@ class Users_model extends CI_Model {
 	public function check_password($username, $password, $active = TRUE, $email = FALSE)
 	{
 		$this->db->where($email ? 'email' : 'username', $username);
-		$u = $this->db->get($this->_table)->row();
+		$u = $this->db->get($this->Table)->row();
 		if(!$u) return false;
 		if($u->active == false && $active == true) return 0;
 		if($u->password == $this->hash_password($u->unique_id, $password))
@@ -250,7 +247,7 @@ class Users_model extends CI_Model {
 	public function check_password_id($id, $password, $active = TRUE)
 	{
 		$this->db->where('id', $id);
-		$u = $this->db->get($this->_table)->row();
+		$u = $this->db->get($this->Table)->row();
 		if(!$u) return false;
 		if($u->active == false && $active == true) return 0;
 		if($u->password == $this->hash_password($u->unique_id, $password))
@@ -295,7 +292,7 @@ class Users_model extends CI_Model {
 	 * @return mixed BOOL(FALSE) if not set in the config; ELSE INT(maxlength)
 	 */
 	public function max_username_length() {
-		$fielddata = $this->db->field_data($this->_table);
+		$fielddata = $this->db->field_data($this->Table);
 		foreach($fielddata as $f) { if($f->name == 'username') { return (int) $f->max_length; }}
 		return false;
 	}
@@ -305,7 +302,7 @@ class Users_model extends CI_Model {
 	 * @return mixed BOOL(FALSE) if not set in the config; ELSE INT(maxlength)
 	 */
 	public function max_ingame_name_length() {
-		$fielddata = $this->db->field_data($this->_table);
+		$fielddata = $this->db->field_data($this->Table);
 		foreach($fielddata as $f) { if($f->name == 'ingame_name') { return (int) $f->max_length; }}
 		return false;
 	}

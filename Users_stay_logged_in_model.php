@@ -1,18 +1,15 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Users_stay_logged_in_model extends CI_Model
+class Users_stay_logged_in_model extends MY_Model
 {
 	// The expiration-date of the cookie and database-entry
 	private $_stay_logged_in;
-
-	// The table in the database
-	private $_table = 'users_stay_logged_in';
 
 	/**
 	 * Magic Method __contruct();
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->load->database();
+		$this->load_config('users_stay_logged_in');
 		$this->load->config('auth');
 		$this->load->library('user_agent');
 		$this->_stay_logged_in = time() + $this->config->item('stay_logged_in_time');
@@ -39,7 +36,7 @@ class Users_stay_logged_in_model extends CI_Model
 		} else {
 			$code = str_shuffle($code);
 		}
-		$this->db->insert($this->_table, array(
+		$this->db->insert($this->Table, array(
 			'user_id' 		=> $uid, 
 			'code' 			=> $code, 
 			'expiration' 	=> $expiration,
@@ -58,7 +55,7 @@ class Users_stay_logged_in_model extends CI_Model
 	 */
 	public function get_for_user($uid) {
 		$this->db->where('user_id', $uid);
-		return $this->db->get($this->_table);
+		return $this->db->get($this->Table);
 	}
 
 	/**
@@ -70,7 +67,7 @@ class Users_stay_logged_in_model extends CI_Model
 	 */
 	public function check($uid, $code, $extend = false) {
 		$this->clean();
-		$results = $this->db->get_where($this->_table, array('user_id' => $uid, 'code' => $code))->num_rows();
+		$results = $this->db->get_where($this->Table, array('user_id' => $uid, 'code' => $code))->num_rows();
 		if($results == 1) { if($extend) $this->extend($uid, $code, $extend); return true; }
 		if($results > 1) throw new Exception('Multiple users in database with same code and id.');
 		if($results == 0) return false;
@@ -89,7 +86,7 @@ class Users_stay_logged_in_model extends CI_Model
 		$this->clean();
 		$this->db->where('user_id', $uid);
 		$this->db->where('code', $code);
-		$this->db->update($this->_table, array('expiration' => $expiration));
+		$this->db->update($this->Table, array('expiration' => $expiration));
 	}
 
 	/**
@@ -101,7 +98,7 @@ class Users_stay_logged_in_model extends CI_Model
 	public function remove($uid, $code) {
 		$this->db->where('user_id', $uid);
 		$this->db->where('code', $code);
-		$this->db->delete($this->_table);
+		$this->db->delete($this->Table);
 		return $this->db->affected_rows();
 	}
 
@@ -111,7 +108,7 @@ class Users_stay_logged_in_model extends CI_Model
 	 */
 	public function clean() {
 		$this->db->where('expiration <', time());
-		$this->db->delete($this->_table);
+		$this->db->delete($this->Table);
 		return $this->db->affected_rows();
 	}
 

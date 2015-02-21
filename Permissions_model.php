@@ -1,15 +1,12 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Permissions_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'permissions';
-
+class Permissions_model extends MY_Model {
 	/**
 	 * Magic Method __construct();
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->load->database();
+
+		$this->load_config('permissions');
 	}
 
 	/**
@@ -19,7 +16,7 @@ class Permissions_model extends CI_Model {
 	 * @return mixed Permission: Based on $array as ARRAY or OBJECT
 	 */
 	public function get_permission($id, $array = false) {
-		 $query = $this->db->get_where($this->_table, array('id' => $id));
+		 $query = $this->db->get_where($this->Table, array('id' => $id));
 		 if($array) return $query->row_array();
 		 return $query->row();
 	}
@@ -30,7 +27,7 @@ class Permissions_model extends CI_Model {
 	 * @return object The permission object
 	 */
 	public function get_permission_by_name($name) {
-		$query = $this->db->get_where($this->_table, array('name' => $name));
+		$query = $this->db->get_where($this->Table, array('name' => $name));
 		return $query->row();
 	}
 
@@ -43,7 +40,7 @@ class Permissions_model extends CI_Model {
 	 */
 	public function get_permissions_by_parent($id, $order_by = 'name', $order = 'ASC') {
 		$this->db->order_by($order_by, $order);
-		$query = $this->db->get_where($this->_table, array('parent' => $id));
+		$query = $this->db->get_where($this->Table, array('parent' => $id));
 		return $query->result_array();
 	}
 
@@ -55,7 +52,7 @@ class Permissions_model extends CI_Model {
 	public function has_childrens($id) {
 		$this->db->where('parent', $id);
 		$this->db->limit(1, 0);
-		if($this->db->get($this->_table)->num_rows() > 0) return true;
+		if($this->db->get($this->Table)->num_rows() > 0) return true;
 		return false;
 	}
 
@@ -71,7 +68,7 @@ class Permissions_model extends CI_Model {
 	public function get_permissions($parents = false, $start = 0, $limit = 30, $order_by = 'name', $order = 'ASC') {
 		if($parents == false) $this->db->where('parent', NULL);
 		$this->db->order_by($order_by, $order);
-		return $this->db->get($this->_table, $limit, $start)->result();
+		return $this->db->get($this->Table, $limit, $start)->result();
 	}
 
 	/**
@@ -110,7 +107,7 @@ class Permissions_model extends CI_Model {
 		if(is_int($parent)) {
 			$data['parent'] = $parent;
 		}
-		$this->db->insert($this->_table, $data);
+		$this->db->insert($this->Table, $data);
 	}
 
 	/**
@@ -122,6 +119,6 @@ class Permissions_model extends CI_Model {
 	public function max_pagination($limit = 30, $parents = false) {
 		if(!$parents) $this->db->where('parent', null);
 		if(!isint($limit)) $limit = 30;
-		return ceil($this->db->get($this->_table)->num_rows() / $limit);
+		return ceil($this->db->get($this->Table)->num_rows() / $limit);
 	}
 }

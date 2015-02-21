@@ -1,15 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class User_activation_model extends CI_Model {
-
-	// The table in the database
-	private $_table = 'user_activation';
-
+class User_activation_model extends MY_Model {
 	/**
 	 * Magic Method __construct();
 	 */
 	public function __construct() {
-		$this->load->database();
+		parent::__construct();
+		$this->load_config('user_activation');
 	}
 	
 	/**
@@ -18,7 +15,7 @@ class User_activation_model extends CI_Model {
 	public function remove_expired()
 	{
 		$this->db->where('expiration <', date('Y-m-d H:i:s'));
-		$this->db->delte($this->_table);
+		$this->db->delte($this->Table);
 	}
 
 	/**
@@ -36,7 +33,7 @@ class User_activation_model extends CI_Model {
 			'code' => $activationcode,
 			'expiration' => $date
 		);
-		$this->db->insert($this->_table, $data);
+		$this->db->insert($this->Table, $data);
 	}
 
 	/**
@@ -46,7 +43,7 @@ class User_activation_model extends CI_Model {
 	public function remove_users_codes($userid)
 	{
 		$this->db->where('user_id', $userid);
-		$this->db->delete($this->_table);
+		$this->db->delete($this->Table);
 	}
 
 	/**
@@ -56,7 +53,7 @@ class User_activation_model extends CI_Model {
 	public function delete($id) 
 	{
 		$this->db->where('id', $id);
-		$this->db->delete($this->_table);
+		$this->db->delete($this->Table);
 	}
 
 	/**
@@ -70,7 +67,7 @@ class User_activation_model extends CI_Model {
 	{
 		$this->db->where('user_id', $userid);
 		$this->db->where('code', $activationcode);
-		$query = $this->db->get($this->_table);
+		$query = $this->db->get($this->Table);
 		$data = $query->row();
 		if(isset($data->user_id))
 		{

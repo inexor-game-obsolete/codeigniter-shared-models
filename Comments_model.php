@@ -1,16 +1,13 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Comments_model extends CI_Model
+class Comments_model extends MY_Model
 {
-	// The table in the database
-	private $_table = 'comments';
-
 	/**
 	 * Magic Method __construct();
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->database();
+		$this->load_config('comments');
 	}
 
 	/**
