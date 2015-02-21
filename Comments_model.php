@@ -1,5 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Comments_model extends MY_Model
+class Comments_model extends CI_Model
 {
 	/**
 	 * Magic Method __construct();
@@ -12,6 +12,7 @@ class Comments_model extends MY_Model
 
 	/**
 	 * Gets a comment by id.
+	 * 
 	 * @param  int $id id of the comment
 	 * @return object     object of the comment
 	 */ 
@@ -23,6 +24,7 @@ class Comments_model extends MY_Model
 
 	/**
 	 * Checks how many direcot answers to a comment exist.
+	 * 
 	 * @param  int $id id of the comment
 	 * @return int     number of direct comments
 	 */
@@ -59,6 +61,7 @@ class Comments_model extends MY_Model
 
 	/**
 	 * Gets answers to a comment
+	 * 
 	 * @param  int     $id     the comment id
 	 * @param  string  $order  order of the loading (by date)
 	 * @param  integer $limit  limit for comments
@@ -74,6 +77,7 @@ class Comments_model extends MY_Model
 
 	/**
 	 * Creates a new comment to a comment section
+	 * 
 	 * @param  string $module     the comment module
 	 * @param  string $identifier the identifier for the module-section
 	 * @param  int    $userid     id of the user who submits the comment
