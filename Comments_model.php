@@ -1,5 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Comments_model extends CI_Model
+class Comments_model extends MY_Model
 {
 	/**
 	 * Magic Method __construct();
@@ -30,7 +30,25 @@ class Comments_model extends CI_Model
 	 */
 	public function answers_to($id)
 	{
-		return $this->db->where('id', $id)->num_rows();
+		return $this->db->where('id', $id)->get($this->Table)->num_rows();
+	}
+
+	/**
+	 * Gets the path (as an array) to the answer-id
+	 * @param  int   $id comment-id
+	 * @return array     contains the path. first is the main-comment, last is the id itself, second-last is the parent-comment-id
+	 */
+	public function path_to($id)
+	{
+		if(!isint($id))
+			return array();
+
+		$return = array($id);
+		
+		while($return[0] != NULL)
+			array_unshift($return, (int) $this->db->select('answer_to')->where('id', $id)->get($this->Table)->row());
+
+		return $return;
 	}
 
 	/**
@@ -72,7 +90,8 @@ class Comments_model extends CI_Model
 	{
 		$this->db->order_by('date', $order);
 		$this->db->limit($limit, $offset);
-		return $this->db->get_where(array("id" => $id), $this->Table)->result();
+		$result = $this->db->get_where($this->Table, array("answer_to" => $id))->result();
+		return $result;
 	}
 
 	/**
@@ -93,6 +112,17 @@ class Comments_model extends CI_Model
 			'comment'    => $comment,
 			'date'       => date('Y-m-d H:i:s')
 		));
+	}
+
+	/**
+	 * Checks if a comment exists
+	 * 
+	 * @param  int     $id the comment id
+	 * @return boolean     true if exists
+	 */
+	public function comment_exists($id)
+	{
+		return ($this->db->get_where($this->Table, array('id' => $id))->num_rows() == 1) ? true : false;
 	}
 
 	/**
