@@ -44,10 +44,18 @@ class Comments_model extends MY_Model
 			return array();
 
 		$return = array($id);
-		
-		while($return[0] != NULL)
-			array_unshift($return, (int) $this->db->select('answer_to')->where('id', $id)->get($this->Table)->row());
-
+		$break = false;
+		while(!$break)
+		{
+			$answer = $this->db->select('answer_to')->where('id', $return[0])->get($this->Table)->row()->answer_to;
+			if(isint($answer))
+				array_unshift($return, $answer);
+			else
+			{
+				break;
+				$break = true;
+			}
+		}
 		return $return;
 	}
 
