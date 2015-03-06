@@ -111,7 +111,7 @@ class Users_model extends MY_Model {
 	 */
 	public function user_by_email($email) {
 		$this->db->where('email', $email);
-		$query = $this->db->get($this->Table, $limit, $start);
+		$query = $this->db->get($this->Table);
 		return $query->row();
 	}
 
